@@ -9,6 +9,7 @@ const HomePage = () => {
           <Link to="/signup" className="text-white hover:bg-purple-700 px-3 py-2 rounded-md text-sm font-medium">Sign Up</Link>
           <Link to="/login" className="text-white hover:bg-purple-700 px-3 py-2 rounded-md text-sm font-medium">Login</Link>
           <Link to="/candidates" className="text-white hover:bg-purple-700 px-3 py-2 rounded-md text-sm font-medium">Candidates</Link>
+          <Link to="/about" className="text-white hover:bg-purple-700 px-3 py-2 rounded-md text-sm font-medium">About</Link>
         </nav>
       </div>
 
