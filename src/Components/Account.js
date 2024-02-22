@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 
 const Account = () => {
   const location = useLocation();
-  const { email } = location.state || { email: 'your email' };  // Fallback to a default message if the email isn't passed
+  const { email } = location.state || { email: 'your email' };
 
   return (
     <div className="container mx-auto px-4">

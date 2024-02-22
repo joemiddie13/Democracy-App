@@ -30,7 +30,7 @@ const SignUp = () => {
         alert(data.message);  // Show success alert
         navigate('/account');  // Redirect to AccountPage
       } else {
-        alert(data.message || 'Failed to sign up');  // Show error message
+        alert(data.message || 'Failed to sign up');
       }
     } catch (error) {
       console.error('Error:', error);
