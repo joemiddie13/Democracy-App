@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/20/solid';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -8,7 +9,9 @@ const SignUp = () => {
     last_name: '',
     password: '',
   });
-
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -17,6 +20,10 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setShowSuccessAlert(false);
+    setShowErrorAlert(false);
+    setErrorMessages([]);
+
     try {
       const response = await fetch('http://127.0.0.1:5000/signup', {
         method: 'POST',
@@ -27,19 +34,80 @@ const SignUp = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        alert(data.message);
-        navigate('/login');
+        setShowSuccessAlert(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
       } else {
-        alert(data.message || 'Failed to sign up');
+        setErrorMessages([data.message]); // Adjust according to your backend response
+        setShowErrorAlert(true);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred. Please try again.');
+      setErrorMessages(['An unexpected error occurred. Please try again later.']);
+      setShowErrorAlert(true);
     }
+  };
+
+  const dismissAlert = () => {
+    setShowSuccessAlert(false);
+    setShowErrorAlert(false);
+    setErrorMessages([]);
   };
 
   return (
     <div className="max-w-md mx-auto my-10 bg-white p-8 border border-gray-300 rounded-lg shadow-lg">
+      {showSuccessAlert && (
+        <div className="rounded-md bg-green-50 p-4 mb-6">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <CheckCircleIcon className="h-5 w-5 text-green-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-green-800">Account created successfully! Redirecting to login...</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <div className="-mx-1.5 -my-1.5">
+                <button
+                  onClick={dismissAlert}
+                  className="inline-flex rounded-md bg-green-50 p-1.5 text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
+                >
+                  <XMarkIcon className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showErrorAlert && (
+        <div className="rounded-md bg-red-50 p-4 mb-6">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Error with your submission</h3>
+              <div className="mt-2 text-sm text-red-700">
+                <ul className="list-disc pl-5 space-y-1">
+                  {errorMessages.map((message, index) => (
+                    <li key={index}>{message}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="ml-auto pl-3">
+              <div className="-mx-1.5 -my-1.5">
+                <button
+                  onClick={dismissAlert}
+                  className="inline-flex rounded-md bg-red-50 p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
+                >
+                  <XMarkIcon className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <h2 className="text-2xl font-semibold text-center text-gray-800">Sign Up ✍🏽</h2>
       <form onSubmit={handleSubmit} className="mt-6">
         <div className="mb-4">
