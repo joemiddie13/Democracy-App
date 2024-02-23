@@ -18,7 +18,6 @@ with app.app_context():
 def signup():
     data = request.get_json()
     
-    # Create an instance of SignUpForm with the data received
     form = SignUpForm(meta={'csrf': False}, data=data)
     
     if form.validate():
@@ -46,7 +45,6 @@ def signup():
 def login():
     data = request.get_json()
     
-    # Create an instance of LoginForm with the data received
     form = LoginForm(meta={'csrf': False}, data=data)
     
     if form.validate():
@@ -59,6 +57,23 @@ def login():
     else:
         first_error = list(form.errors.values())[0][0] if form.errors else 'Invalid data'
         return jsonify({'message': first_error}), 400
+
+@app.route('/user-details', methods=['GET'])
+def user_details():
+    email = request.args.get('email')
+    if not email:
+        return jsonify({'message': 'Email is required'}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    user_details_response = jsonify({
+        'firstName': user.first_name,
+        'lastName': user.last_name,
+        'email': user.email
+    }) 
+    return user_details_response, 200
 
 if __name__ == '__main__':
     app.run(debug=True)

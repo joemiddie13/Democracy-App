@@ -27,8 +27,8 @@ const SignUp = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        alert(data.message);  // Show success alert
-        navigate('/account');  // Redirect to AccountPage
+        alert(data.message);
+        navigate('/login');
       } else {
         alert(data.message || 'Failed to sign up');
       }

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,7 +17,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://127.0.0.1:5000/login', {  // Make sure your Flask backend has a /login endpoint
+      const response = await fetch('http://127.0.0.1:5000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,10 +26,10 @@ const Login = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        // Assuming the backend sends back the user's email upon successful authentication
-        navigate('/account', { state: { email: data.email } });  // Pass the user's email to the Account component
+        login(data.email);
+        navigate('/account');
       } else {
-        alert(data.message || 'Login failed');  // Show error message
+        alert(data.message || 'Login failed');
       }
     } catch (error) {
       console.error('Error:', error);
