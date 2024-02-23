@@ -39,7 +39,7 @@ const Login = () => {
 
   return (
     <div className="max-w-md mx-auto my-10 bg-white p-8 border border-gray-300 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-semibold text-center text-gray-800">Login</h2>
+      <h2 className="text-2xl font-semibold text-center text-gray-800">Login ✅</h2>
       <form onSubmit={handleSubmit} className="mt-6">
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-semibold text-gray-600">Email</label>
