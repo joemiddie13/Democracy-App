@@ -16,6 +16,7 @@ migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
 
+# SignUp Page Route
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
@@ -43,6 +44,7 @@ def signup():
         first_error = list(form.errors.values())[0][0] if form.errors else 'Invalid data'
         return jsonify({'message': first_error}), 400
 
+# Login Page Route
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -76,6 +78,19 @@ def user_details():
         'email': user.email
     }) 
     return user_details_response, 200
+
+@app.route('/candidates', methods=['GET'])
+def get_candidates():
+    candidates = Candidate.query.all()
+    candidates_data = [{
+        'id': candidate.id,
+        'full_name': candidate.full_name,
+        'dob': candidate.dob.strftime('%Y-%m-%d'),
+        'party_affiliation': candidate.party_affiliation,
+        'political_ideology': candidate.political_ideology
+    } for candidate in candidates]
+    return jsonify(candidates_data), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)
