@@ -39,7 +39,7 @@ const SignUp = () => {
           navigate('/login');
         }, 3000);
       } else {
-        setErrorMessages([data.message]); // Adjust according to your backend response
+        setErrorMessages([data.message]);
         setShowErrorAlert(true);
       }
     } catch (error) {
