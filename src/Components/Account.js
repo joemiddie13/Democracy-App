@@ -83,6 +83,34 @@ const Account = () => {
     }
   };
 
+  const submitRankChoices = async () => {
+    const rankChoiceData = {
+      first_choice: rankedCandidates[0]?.id,
+      second_choice: rankedCandidates[1]?.id,
+      third_choice: rankedCandidates[2]?.id,
+      fourth_choice: rankedCandidates[3]?.id,
+    };
+  
+    try {
+      const response = await fetch('http://127.0.0.1:5000/submit-rank-choice', {
+        method: 'POST',
+        body: JSON.stringify(rankChoiceData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        console.log('Submission successful', data);
+      } else {
+        console.error('Submission failed', data.errors);
+      }
+    } catch (error) {
+      console.error('Error submitting rank choices:', error);
+    }
+  };
+
   return (
     <>
       <div className="container mx-auto px-4 text-center">
@@ -120,6 +148,11 @@ const Account = () => {
           </div>
         </div>
       </DndContext>
+      <div className="container mx-auto px-4">
+        <button onClick={submitRankChoices} className="submit-button mt-4">
+        Submit Rank Choices
+        </button>
+      </div>
     </>
   );
 };
