@@ -19,7 +19,7 @@ const NavigationBar = () => {
   };
 
   return (
-    <div className="sticky top-0 bg-purple-600 py-4">
+    <div className="sticky top-0 z-50 bg-purple-600 py-4">
       <nav className="flex justify-between">
         <div className="flex space-x-4">
           <Link to="/" className="text-white hover:bg-purple-700 px-3 py-2 rounded-md text-sm font-medium">Democracy App</Link>

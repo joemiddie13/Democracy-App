@@ -1,108 +1,92 @@
-"use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { cn } from '../utils/cn.ts'
-import democracyTable from '../assets/Democracy-Table.jpg';
+import { cn } from "../utils/cn.ts";
 
-export function About() {
-  return (
-    <LampContainer>
-      <motion.div
-        initial={{ opacity: 0.5, y: 100 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{
-          delay: 0.3,
-          duration: 0.8,
-          ease: "easeInOut",
-        }}
-      >
-        <h1 className="mt-1 bg-gradient-to-br from-slate-300 to-slate-500 py-40 bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-7xl">
-          Democracy App
-        </h1>
-        <img src={democracyTable} alt="A table setup symbolizing democratic discussion." className="mt-4 w-full max-w-md mx-auto" />
-      </motion.div>
-    </LampContainer>
-  );
-}
+const BoxesCore = ({ className, ...rest }) => {
+  const rows = new Array(150).fill(1);
+  const cols = new Array(100).fill(1);
+  const colors = ["#7F9CF5", "#F9A8D4", "#34D399", "#FCD34D", "#FCA5A5", "#D8B4FE", "#60A5FA", "#818CF8", "#A78BFA"];
 
-export const LampContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
+  const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
+
   return (
     <div
-      className={cn(
-        "relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-slate-950 w-full rounded-md z-0",
-        className
-      )}
+      style={{ transform: "translate(-10%,-60%) skewX(-48deg) skewY(14deg) scale(0.675) rotate(0deg) translateZ(0)" }}
+      className={cn("absolute left-1/4 p-4 -top-1/4 flex -translate-x-1/2 -translate-y-1/2 w-full h-full z-[0]", className)}
+      {...rest}
     >
-      <div className="relative flex w-full flex-1 scale-y-125 items-center justify-center isolate z-0 ">
-        <motion.div
-          initial={{ opacity: 0.5, width: "15rem" }}
-          whileInView={{ opacity: 1, width: "30rem" }}
-          transition={{
-            delay: 0.3,
-            duration: 0.8,
-            ease: "easeInOut",
-          }}
-          style={{
-            backgroundImage: `conic-gradient(var(--conic-position), var(--tw-gradient-stops))`,
-          }}
-          className="absolute inset-auto right-1/2 h-56 overflow-visible w-[30rem] bg-gradient-conic from-cyan-500 via-transparent to-transparent text-white [--conic-position:from_70deg_at_center_top]"
-        >
-          <div className="absolute  w-[100%] left-0 bg-slate-950 h-40 bottom-0 z-20 [mask-image:linear-gradient(to_top,white,transparent)]" />
-          <div className="absolute  w-40 h-[100%] left-0 bg-slate-950  bottom-0 z-20 [mask-image:linear-gradient(to_right,white,transparent)]" />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0.5, width: "15rem" }}
-          whileInView={{ opacity: 1, width: "30rem" }}
-          transition={{
-            delay: 0.3,
-            duration: 0.8,
-            ease: "easeInOut",
-          }}
-          style={{
-            backgroundImage: `conic-gradient(var(--conic-position), var(--tw-gradient-stops))`,
-          }}
-          className="absolute inset-auto left-1/2 h-56 w-[30rem] bg-gradient-conic from-transparent via-transparent to-cyan-500 text-white [--conic-position:from_290deg_at_center_top]"
-        >
-          <div className="absolute  w-40 h-[100%] right-0 bg-slate-950  bottom-0 z-20 [mask-image:linear-gradient(to_left,white,transparent)]" />
-          <div className="absolute  w-[100%] right-0 bg-slate-950 h-40 bottom-0 z-20 [mask-image:linear-gradient(to_top,white,transparent)]" />
-        </motion.div>
-        <div className="absolute top-1/2 h-48 w-full translate-y-12 scale-x-150 bg-slate-950 blur-2xl"></div>
-        <div className="absolute top-1/2 z-50 h-48 w-full bg-transparent opacity-10 backdrop-blur-md"></div>
-        <div className="absolute inset-auto z-50 h-36 w-[28rem] -translate-y-1/2 rounded-full bg-cyan-500 opacity-50 blur-3xl"></div>
-        <motion.div
-          initial={{ width: "8rem" }}
-          whileInView={{ width: "16rem" }}
-          transition={{
-            delay: 0.3,
-            duration: 0.8,
-            ease: "easeInOut",
-          }}
-          className="absolute inset-auto z-30 h-36 w-64 -translate-y-[6rem] rounded-full bg-cyan-400 blur-2xl"
-        ></motion.div>
-        <motion.div
-          initial={{ width: "15rem" }}
-          whileInView={{ width: "30rem" }}
-          transition={{
-            delay: 0.3,
-            duration: 0.8,
-            ease: "easeInOut",
-          }}
-          className="absolute inset-auto z-50 h-0.5 w-[30rem] -translate-y-[7rem] bg-cyan-400 "
-        ></motion.div>
+      {rows.map((_, i) => (
+        <div key={`row-${i}`} className="w-16 h-8 border-l border-slate-700 relative">
+          {cols.map((_, j) => (
+            <motion.div
+              whileHover={{ backgroundColor: getRandomColor(), transition: { duration: 0 } }}
+              key={`col-${j}`}
+              className="w-16 h-8 border-r border-t border-slate-700 relative"
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};
 
-        <div className="absolute inset-auto z-40 h-44 w-full -translate-y-[12.5rem] bg-slate-950 "></div>
-      </div>
+const Boxes = React.memo(BoxesCore);
 
-      <div className="relative z-50 flex -translate-y-80 flex-col items-center px-5">
-        {children}
+const typewriterTextLines = [
+  "Embracing Ranked Choice Voting: A New Horizon for Democracy.",
+  "Ranked Choice Voting (RCV) revolutionizes voting, ensuring a more inclusive and fair electoral process.",
+  "In local elections, RCV encourages diverse candidate platforms and promotes voter engagement.",
+  "For national elections, it mitigates two-party dominance, fostering a multiparty system that better represents voter preferences.",
+  "Our vision: A future where every vote counts and democracy thrives through informed and engaged participation."
+];
+
+const About = () => {
+  return (
+    <div className="min-h-screen bg-slate-800 flex flex-col items-center justify-start pt-20 relative">
+      <Boxes className="" />
+      <div className="z-50 p-3 text-center">
+        <motion.h1
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="text-5xl font-bold text-white mb-4"
+        >
+          Democracy App
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="text-xl text-gray-300 mb-8"
+        >
+          Explore, Learn, and Vote with Confidence! ✍🏽
+        </motion.p>
+        {typewriterTextLines.map((line, index) => (
+          <TypewriterText key={index} text={line} delay={index * 2} />
+        ))}
       </div>
     </div>
+  );
+};
+
+const TypewriterText = ({ text, delay }) => {
+  const animation = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { delay, duration: 0.5 }
+    }
+  };
+
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={animation}
+      className="text-white text-lg"
+    >
+      {text}
+    </motion.div>
   );
 };
 

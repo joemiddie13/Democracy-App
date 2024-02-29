@@ -3,6 +3,8 @@ import Rocko from '../assets/Rocko.jpeg'
 import Bishop from '../assets/Bishop.png'
 import Holly from '../assets/Holly.jpeg'
 import Arabella from '../assets/Arabella.png'
+// import { motion, AnimatePresence } from 'framer-motion';
+// Revisit the animation stuff later.
 
 const people = [
   {

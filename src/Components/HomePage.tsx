@@ -19,7 +19,7 @@ export function About() {
         <h1 className="mt-1 bg-gradient-to-br from-slate-300 to-slate-500 py-40 bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-7xl">
           Democracy App
         </h1>
-        <img src={democracyTable} alt="A table setup symbolizing democratic discussion." className="mt-4 w-full max-w-md mx-auto" />
+        <img src={democracyTable} alt="A table setup symbolizing democratic discussion." className="mt-1 w-full max-w-md mx-auto" />
       </motion.div>
     </LampContainer>
   );
