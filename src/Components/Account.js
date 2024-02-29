@@ -112,9 +112,9 @@ const Account = () => {
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-slate-800 text-white">
       <div className="container mx-auto px-4 text-center">
-        <h1 className="text-4xl font-bold my-8">Welcome, {userDetails.firstName} {userDetails.lastName}!</h1>
+        <h1 className="text-4xl font-bold mt-4 mb-8">Welcome, {userDetails.firstName} {userDetails.lastName}!</h1>
       </div>
       <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
         <div className="container mx-auto px-4">
@@ -123,7 +123,7 @@ const Account = () => {
               <div className="candidates-list w-1/3">
                 {candidates.map((candidate) => (
                   <DragCandidate key={candidate.id} id={`draggable-${candidate.id}`}>
-                    <div className="p-4 border rounded my-2">
+                    <div className="p-4 border rounded my-2 bg-slate-700">
                       <h3 className="text-xl font-bold">{candidate.full_name}</h3>
                       <p>Party Affiliation: {candidate.party_affiliation}</p>
                       <p>Political Ideology: {candidate.political_ideology}</p>
@@ -136,7 +136,7 @@ const Account = () => {
               <DropRankChoice id="drop-area" className="rank-choice-area w-1/3">
                 {rankedCandidates.map((candidate) => (
                   <DragCandidate key={candidate.id} id={`droppable-${candidate.id}`}>
-                    <div className="p-4 border rounded my-2">
+                    <div className="p-4 border rounded my-2 bg-slate-700"> {/* Updated classes for background */}
                       <h3 className="text-xl font-bold">{candidate.full_name}</h3>
                       <p>Party Affiliation: {candidate.party_affiliation}</p>
                       <p>Political Ideology: {candidate.political_ideology}</p>
@@ -148,12 +148,12 @@ const Account = () => {
           </div>
         </div>
       </DndContext>
-      <div className="container mx-auto px-4">
-        <button onClick={submitRankChoices} className="submit-button mt-4">
-        Submit Rank Choices
+      <div className="container mx-auto px-4 flex justify-center items-center">
+        <button onClick={submitRankChoices} className="submit-button mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+          Submit Rank Choices
         </button>
       </div>
-    </>
+    </div>
   );
 };
 
