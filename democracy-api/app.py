@@ -58,7 +58,7 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         
         if user and user.password == form.password.data:
-            db.session['user_id'] = user.id  # Store user's ID in session
+            session['user_id'] = user.id  # Store user's ID in session
             return jsonify({'message': 'Login successful', 'email': user.email}), 200
         else:
             return jsonify({'message': 'Invalid email or password'}), 401
