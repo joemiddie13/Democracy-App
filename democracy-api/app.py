@@ -1,81 +1,90 @@
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from flask_migrate import Migrate
-from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField
 from models import db, User, Candidate, RankChoice
 from forms import SignUpForm, LoginForm, RankChoiceForm
 
+# Initialize the Flask application
 app = Flask(__name__)
-# CORS(app, supports_credentials=False, origins='http://localhost:3000')
-# CORS(app)
+
+# Configure Cross-Origin Resource Sharing (CORS) to allow frontend requests
 CORS(app, supports_credentials=True, origins='http://localhost:3000', methods=['GET', 'POST', 'OPTIONS'], allow_headers=['Content-Type', 'Authorization'])
 
+# Set secret key for session management and configure the database URI
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///yourdatabase.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize database with app context and configure migration for database schema changes
 db.init_app(app)
 migrate = Migrate(app, db)
 
+# Create database tables within the application context
 with app.app_context():
     db.create_all()
 
-# SignUp Page Route
+# Route for user signup
 @app.route('/signup', methods=['POST'])
 def signup():
-    data = request.get_json()
+    data = request.get_json()  # Parse JSON data from the request
     
+    # Initialize and validate the signup form with the parsed data
     form = SignUpForm(meta={'csrf': False}, data=data)
     
-    if form.validate():
+    if form.validate():  # Check if form data is valid
+        # Check if the email is already used by another user
         if User.query.filter_by(email=form.email.data).first():
             return jsonify({'message': 'Email already in use'}), 400
 
+        # Create a new user instance with the form data
         new_user = User(
             email=form.email.data,
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             password=form.password.data
         )
-        db.session.add(new_user)
+        db.session.add(new_user)  # Add the new user to the session for commit
         try:
-            db.session.commit()
+            db.session.commit()  # Commit the session changes to the database
             return jsonify({'message': 'User created successfully'}), 201
-        except Exception as e:
-            db.session.rollback()
+        except Exception as e:  # Handle exceptions during commit
+            db.session.rollback()  # Rollback session changes in case of error
             return jsonify({'error': str(e)}), 500
-    else:
+    else:  # If form validation fails, return the first validation error message
         first_error = list(form.errors.values())[0][0] if form.errors else 'Invalid data'
         return jsonify({'message': first_error}), 400
 
-# Login Page Route
+# Route for user login
 @app.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    form = LoginForm(meta={'csrf': False}, data=data)
+    data = request.get_json()  # Parse JSON data from the request
+    form = LoginForm(meta={'csrf': False}, data=data)  # Initialize and validate the login form
     
-    if form.validate():
-        user = User.query.filter_by(email=form.email.data).first()
+    if form.validate():  # Check if form data is valid
+        user = User.query.filter_by(email=form.email.data).first()  # Retrieve the user by email
         
+        # Check if user exists and password is correct
         if user and user.password == form.password.data:
-            session['user_id'] = user.id  # Store user's ID in session
+            session['user_id'] = user.id  # Store the user's ID in the session
             return jsonify({'message': 'Login successful', 'email': user.email}), 200
-        else:
+        else:  # If login credentials are invalid
             return jsonify({'message': 'Invalid email or password'}), 401
-    else:
+    else:  # If form validation fails, return the first validation error message
         first_error = list(form.errors.values())[0][0] if form.errors else 'Invalid data'
         return jsonify({'message': first_error}), 400
 
+# Route to fetch user details
 @app.route('/user-details', methods=['GET'])
 def user_details():
-    email = request.args.get('email')
-    if not email:
+    email = request.args.get('email')  # Retrieve email from query parameters
+    if not email:  # If email is not provided
         return jsonify({'message': 'Email is required'}), 400
 
-    user = User.query.filter_by(email=email).first()
-    if not user:
+    user = User.query.filter_by(email=email).first()  # Retrieve the user by email
+    if not user:  # If user is not found
         return jsonify({'message': 'User not found'}), 404
 
+    # Return user details as JSON
     user_details_response = jsonify({
         'firstName': user.first_name,
         'lastName': user.last_name,
@@ -83,37 +92,38 @@ def user_details():
     }) 
     return user_details_response, 200
 
+# Route to fetch all candidates
 @app.route('/candidates', methods=['GET'])
 def get_candidates():
-    candidates = Candidate.query.all()
+    candidates = Candidate.query.all()  # Retrieve all candidates from the database
+    # Serialize candidate data for JSON response
     candidates_data = [{
         'id': candidate.id,
         'full_name': candidate.full_name,
-        'dob': candidate.dob.strftime('%Y-%m-%d'),
+        'dob': candidate.dob.strftime('%Y-%m-%d'),  # Format date of birth
         'party_affiliation': candidate.party_affiliation,
         'political_ideology': candidate.political_ideology
     } for candidate in candidates]
     return jsonify(candidates_data), 200
 
-def get_current_user_id(user_id):
-    return session.get(user_id)
+# Utility function to retrieve the current user's ID from the session
+def get_current_user_id():
+    return session.get('user_id')
 
-
-
-
-
-# Submit-Rank-Choice Route Attempt #1
+# Route to submit ranked choices
 @app.route('/submit-rank-choice', methods=['POST'])
 def submit_rank_choice():
-    data = request.get_json()
-    form = RankChoiceForm(meta={'csrf': False}, data=data)
-    print(data)
-    if form.validate():
-        user_id = db.session['user_id']
-        print(user_id)
-        if user_id is None:
-            return jsonify({'message': 'User not authenticated'}), 401
+    if 'user_id' not in session:  # Check if the user is authenticated
+        return jsonify({'message': 'User not authenticated'}), 401
 
+    user_id = session['user_id']  # Retrieve the current user's ID from the session
+    data = request.get_json()  # Parse JSON data from the request
+
+    # Instantiate RankChoiceForm with submitted data
+    form = RankChoiceForm(data=data)
+
+    if form.validate():  # Check if form data is valid
+        # Create a RankChoice instance using form data
         rank_choice = RankChoice(
             user_id=user_id,
             first_choice=form.first_choice.data,
@@ -121,98 +131,23 @@ def submit_rank_choice():
             third_choice=form.third_choice.data,
             fourth_choice=form.fourth_choice.data,
         )
-        db.session.add(rank_choice)
-        db.session.commit()
-        return jsonify({'message': 'Rank choices saved successfully!'}), 200
-    else:
+
+        db.session.add(rank_choice)  # Add the rank choice to the session for commit
+        try:
+            db.session.commit()  # Commit the session changes to the database
+            return jsonify({'message': 'Rank choices saved successfully!'}), 200
+        except Exception as e:  # Handle exceptions during commit
+            db.session.rollback()  # Rollback session changes in case of error
+            return jsonify({'error': str(e)}), 500
+    else:  # If form validation fails, return the errors
         return jsonify({'errors': form.errors}), 400
 
-#Submit-Rank-Choice debugging
-# @app.route('/submit-rank-choice', methods=['POST'])
-# def submit_rank_choice():
-#     data = request.get_json()
-
-#     # Temporary response to test endpoint accessibility
-#     return jsonify({'message': 'Received data', 'data': data}), 200
-
-# @app.route('/submit-rank-choice', methods=['POST'])
-# def submit_rank_choice():
-#     data = request.get_json()
-#     print("Received data:", data)  # Debugging: Print received data
-
-#     user_id = get_current_user_id('user_id')
-#     print("user_id: **********",user_id)
-#     if user_id is None:
-#         print("User not authenticated")  # Debugging: Print authentication issue
-#         return jsonify({'message': 'User not authenticated'}), 401
-
-#     # Assuming data is received in the expected format
-#     try:
-#         rank_choice = RankChoice(
-#             user_id=user_id,
-#             first_choice=data['first_choice'],
-#             second_choice=data['second_choice'],
-#             third_choice=data['third_choice'],
-#             fourth_choice=data['fourth_choice'],
-#         )
-#         db.session.add(rank_choice)
-#         db.session.commit()
-#         print("Rank choices saved successfully")  # Debugging: Print success message
-#         return jsonify({'message': 'Rank choices saved successfully'}), 200
-#     except KeyError as e:
-#         print("Data missing:", e)  # Debugging: Print missing data key
-#         return jsonify({'error': 'Missing data for key: {}'.format(e)}), 400
-#     except Exception as e:
-#         print("Error saving rank choices:", e)  # Debugging: Print exception
-#         db.session.rollback()
-#         return jsonify({'error': 'Error saving rank choices'}), 500
-
-# class RankChoiceForm(FlaskForm):
-#     first_choice = SelectField('First Choice', choices=[(1, 'Candidate A'), (2, 'Candidate B'), (3, 'Candidate C')])
-#     second_choice = SelectField('Second Choice', choices=[(1, 'Candidate A'), (2, 'Candidate B'), (3, 'Candidate C')])
-#     third_choice = SelectField('Third Choice', choices=[(1, 'Candidate A'), (2, 'Candidate B'), (3, 'Candidate C')])
-#     fourth_choice = SelectField('Fourth Choice', choices=[(1, 'Candidate A'), (2, 'Candidate B'), (3, 'Candidate C')])
-
-# Google Gemini Suggestion
-# @app.route('/submit-rank-choice', methods=['POST'])
-# def submit_rank_choice():
-#     form = RankChoiceForm()
-
-#     if form.validate_on_submit():
-#         user_id = get_current_user_id()
-#         if user_id is None:
-#             return jsonify({'message': 'User not authenticated'}), 401
-
-#         # Extract choices from the form
-#         first_choice = form.first_choice.data
-#         second_choice = form.second_choice.data
-#         third_choice = form.third_choice.data
-#         fourth_choice = form.fourth_choice.data
-
-#         # Create and save RankChoice object
-#         rank_choice = RankChoice(
-#             user_id=user_id,
-#             first_choice=first_choice,
-#             second_choice=second_choice,
-#             third_choice=third_choice,
-#             fourth_choice=fourth_choice,
-#         )
-#         db.session.add(rank_choice)
-#         db.session.commit()
-
-#         return jsonify({'message': 'Rank choices saved successfully!'}), 200
-#     else:
-#         return jsonify({'errors': form.errors}), 400
-
-    
-# Logout route to clear the session
+# Route to clear the session for logout
 @app.route('/logout', methods=['POST'])
 def logout():
-    session.clear()  # Clear session data
+    session.clear()  # Clear all data in the session
     return jsonify({'message': 'Logout successful'}), 200
 
-
-
+# Run the Flask application
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-    # app.run(host='localhost', port=9874)    
