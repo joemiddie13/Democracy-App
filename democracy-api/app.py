@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from models import db, User, Candidate, RankChoice
 from forms import SignUpForm, LoginForm, RankChoiceForm
+import pytest
 
 # Initialize the Flask application
 app = Flask(__name__)
@@ -147,6 +148,12 @@ def submit_rank_choice():
 def logout():
     session.clear()  # Clear all data in the session
     return jsonify({'message': 'Logout successful'}), 200
+
+### Route Testing ###
+class TestConfig:
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # or another test database
+    SECRET_KEY = 'test_secret'
 
 # Run the Flask application
 if __name__ == '__main__':
