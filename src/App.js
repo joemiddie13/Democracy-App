@@ -12,6 +12,7 @@ import About from './Components/About.tsx';
 const NavigationBar = () => {
   const { authState, logout } = useAuth();
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const handleLogout = () => {
     logout();
