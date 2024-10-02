@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./democracy-api
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+    volumes:
+      - ./democracy-api:/app
+
+  frontend:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    depends_on:
+      - backend
+
+volumes:
+  democracy-api:
