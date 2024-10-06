@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
-COPY . .
+COPY democracy-api/requirements.txt .
 
 # Expose the port that Flask runs on
 EXPOSE 5000
