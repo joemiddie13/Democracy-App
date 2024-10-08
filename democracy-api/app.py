@@ -157,7 +157,8 @@ class TestConfig:
 
 # Run the Flask application
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Disable debug mode for production
+    app.run(debug=False, host='0.0.0.0', port=5000)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
