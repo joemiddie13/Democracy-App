@@ -1,7 +1,6 @@
-"use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { cn } from '../utils/cn.ts'
+import { cn } from '../utils/cn'
 import democracyTable from '../assets/Democracy-Table.jpg';
 
 export function About() {

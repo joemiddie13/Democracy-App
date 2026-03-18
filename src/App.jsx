@@ -1,13 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './Components/AuthContext';
-import './App.css';
-import HomePage from './Components/HomePage.tsx';
+import HomePage from './Components/HomePage';
 import SignUp from './Components/SignUp';
 import Account from './Components/Account';
 import Login from './Components/Login';
 import Candidates from './Components/Candidates';
-import About from './Components/About.tsx';
+import About from './Components/About';
 
 const NavigationBar = () => {
   const { authState, logout } = useAuth();
